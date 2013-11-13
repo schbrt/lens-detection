@@ -5,24 +5,31 @@ import os
 import copy
 from astropy.io import fits
 
+class Image:
+    def __init__(self, name, mat, des, label=None):
+        self.name
+        self.label = label
+        self.matrix = mat
+        self.descriptor = des
+
 
 def runSiftJPG(f, count):
     img = cv2.imread(f.name)
 
     #is grayscale conversion necessary?
-    #out = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    out = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     #if output has 'order' BGR, otherwise RGB
 
     #instantiate feature detector
     #sift = cv2.SIFT()
-    surf = cv2.SURF()
+    surf = cv2.SURF(hessianThreshold =100.0)
 
 
     #kp, desc = sift.detectAndCompute(out, None)
     kp, desc = surf.detectAndCompute(img, None)
 
     #change img to out if grayscale
-    img = cv2.drawKeypoints(img, kp, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    img = cv2.drawKeypoints(out, kp, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     name = 'sifted' + str(count) + '.jpg'
 
 
@@ -30,8 +37,7 @@ def runSiftJPG(f, count):
     fullpath = os.path.join(path, name)
     cv2.imwrite(fullpath, img)
 
-    print desc
-    return desc
+    ret = Image(f.name, img, desc)
 
 
 '''
@@ -76,6 +82,7 @@ def getDescriptors():
                 print filename
 
     return descriptors
+
 
     '''
     for filename in os.listdir('FITS files/positive/g'):
