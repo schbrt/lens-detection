@@ -5,18 +5,20 @@ import sys
 
 def sift(f, count):
     img = cv.Image(f)
-    feats = img.findKeypoints(flavor='SIFT', highQuality=True)
+    feats = img.findKeypoints(min_quality=1000.0, flavor='SURF', highQuality=True)
+    #rank features in ascending order
     feats = feats.sortArea()
-    #get 10 most important features
-    #top_feats = feats[-10:]
-    #top_feats.draw()
+
     feats.draw()
 
     name = 'sifted' + str(count) + '.jpg'
     path  = os.path.dirname(os.path.abspath(__file__)) + '/processed_data/'
     fullpath = os.path.join(path, name)
     img.save(fullpath)
-
+    des = []
+    for feat in feats:
+        des.append(feat.descriptor())
+    return des
 
 newpath = os.path.dirname(os.path.abspath(__file__)) + '/processed_data'
 if not os.path.exists(newpath):
@@ -28,5 +30,6 @@ for filename in os.listdir('caslenses/'):
     if filename.endswith('.jpeg') or filename.endswith('.jpg'):
         #with open('caslenses/' + filename, 'rb') as f:
         f = 'caslenses/' + filename
-        sift(f, count)
+        img = sift(f, count)
         print filename
+        print img
