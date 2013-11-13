@@ -7,13 +7,13 @@ from astropy.io import fits
 
 class Image:
     def __init__(self, name, mat, des, label=None):
-        self.name
+        self.name = name
         self.label = label
         self.matrix = mat
         self.descriptor = des
 
 
-def runSiftJPG(f, count):
+def runSiftJPG(f, count, tar):
     img = cv2.imread(f.name)
 
     #is grayscale conversion necessary?
@@ -22,7 +22,7 @@ def runSiftJPG(f, count):
 
     #instantiate feature detector
     #sift = cv2.SIFT()
-    surf = cv2.SURF(hessianThreshold =100.0)
+    surf = cv2.SURF(hessianThreshold =500.0)
 
 
     #kp, desc = sift.detectAndCompute(out, None)
@@ -33,12 +33,33 @@ def runSiftJPG(f, count):
     name = 'sifted' + str(count) + '.jpg'
 
 
-    path  = os.path.dirname(os.path.abspath(__file__)) + '/processed_data/'
+    path  = os.path.dirname(os.path.abspath(__file__)) + '/' + str(tar)
     fullpath = os.path.join(path, name)
     cv2.imwrite(fullpath, img)
 
     ret = Image(f.name, img, desc)
 
+
+'''
+Returns an array of descriptors
+'''
+def getDescriptors(src, tar):
+    newpath = os.path.dirname(os.path.abspath(__file__)) + '/' + str(tar)
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
+
+    descriptors = []
+    count = 0
+    srcDir = src + '/'
+    for filename in os.listdir(str(srcDir)):
+        count += 1
+        if filename.endswith('.jpeg') or filename.endswith('.jpg'):
+            with open(str(srcDir) + filename, 'rb') as f:
+                desc = runSiftJPG(f, count, tar)
+                descriptors.append(desc)
+                print filename
+
+    return descriptors
 
 '''
 def runSiftFits(f,filename):
@@ -60,37 +81,12 @@ def runSiftFits(f,filename):
     #fcopy = copy.deepcopy(f)
     #fcopy[0].data = img
     fits.writeto('processed_data/' + filename, img)
-'''
 
 
-'''
-Returns an array of descriptors
-'''
-def getDescriptors():
-    newpath = os.path.dirname(os.path.abspath(__file__)) + '/processed_data'
-    if not os.path.exists(newpath):
-        os.makedirs(newpath)
-
-    descriptors = []
-    count = 0
-    for filename in os.listdir('caslenses/'):
-        count += 1
-        if filename.endswith('.jpeg') or filename.endswith('.jpg'):
-            with open('caslenses/' + filename, 'rb') as f:
-                desc = runSiftJPG(f, count)
-                descriptors.append(desc)
-                print filename
-
-    return descriptors
-
-
-    '''
     for filename in os.listdir('FITS files/positive/g'):
         with fits.open('FITS files/positive/g/' + filename) as f:
             runSiftFits(f, filename)
-    '''
 
 
-
-
+'''
 
