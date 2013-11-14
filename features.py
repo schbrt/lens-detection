@@ -38,7 +38,7 @@ def runSiftJPG(f, count, tar):
     cv2.imwrite(fullpath, img)
 
     ret = Image(f.name, img, desc)
-
+    return ret
 
 '''
 Returns an array of descriptors
@@ -48,18 +48,18 @@ def getDescriptors(src, tar):
     if not os.path.exists(newpath):
         os.makedirs(newpath)
 
-    descriptors = []
+    imageList = []
     count = 0
     srcDir = src + '/'
     for filename in os.listdir(str(srcDir)):
         count += 1
         if filename.endswith('.jpeg') or filename.endswith('.jpg'):
             with open(str(srcDir) + filename, 'rb') as f:
-                desc = runSiftJPG(f, count, tar)
-                descriptors.append(desc)
+                image = runSiftJPG(f, count, tar)
+                imageList.append(image)
                 print filename
 
-    return descriptors
+    return imageList
 
 '''
 def runSiftFits(f,filename):
