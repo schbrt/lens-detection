@@ -21,12 +21,12 @@ def runSiftJPG(f, count, tar):
     #if output has 'order' BGR, otherwise RGB
 
     #instantiate feature detector
-    #sift = cv2.SIFT()
-    surf = cv2.SURF(hessianThreshold =500.0)
+    sift = cv2.SIFT()
+    #surf = cv2.SURF(hessianThreshold =500.0)
 
 
-    #kp, desc = sift.detectAndCompute(out, None)
-    kp, desc = surf.detectAndCompute(img, None)
+    kp, desc = sift.detectAndCompute(out, None)
+    #kp, desc = surf.detectAndCompute(img, None)
 
     #change img to out if grayscale
     img = cv2.drawKeypoints(out, kp, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
