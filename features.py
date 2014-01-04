@@ -6,11 +6,11 @@ import copy
 from astropy.io import fits
 
 class Image:
-    def __init__(self, name, mat, des, label=None):
+    def __init__(self, name, mat,  feats, label=None):
         self.name = name
         self.label = label
         self.matrix = mat
-        self.descriptor = des
+        self.features = feats
 
 
 def runSiftJPG(f, count, tar):
@@ -21,14 +21,14 @@ def runSiftJPG(f, count, tar):
     #if output has 'order' BGR, otherwise RGB
 
     #instantiate feature detector
-    sift = cv2.SIFT()
-    #surf = cv2.SURF(hessianThreshold =500.0)
+    #sift = cv2.SIFT()
+    surf = cv2.SURF(hessianThreshold = 500.0)
 
-
-    kp, desc = sift.detectAndCompute(out, None)
-    #kp, desc = surf.detectAndCompute(img, None)
-
+    #kp, desc = sift.detectAndCompute(out, None)
+    kp, desc = surf.detectAndCompute(img, None)
     #change img to out if grayscale
+
+
     img = cv2.drawKeypoints(out, kp, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     name = 'sifted' + str(count) + '.jpg'
 
@@ -41,9 +41,9 @@ def runSiftJPG(f, count, tar):
     return ret
 
 '''
-Returns an array of descriptors
+Returns an array of feature vector of desc
 '''
-def getDescriptors(src, tar):
+def getFeats(src, tar):
     newpath = os.path.dirname(os.path.abspath(__file__)) + '/' + str(tar)
     if not os.path.exists(newpath):
         os.makedirs(newpath)
